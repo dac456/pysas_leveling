@@ -18,21 +18,25 @@ if __name__ == '__main__':
     
     grid = Map(16, 16, 8, {'oracle_termination': True})
     alg = AlgorithmBase(grid, {'num_agents':8})
+    
+    # initialize agent positions
     for a in alg.agents:
         a.idx[0] = np.random.randint(0,65535) % 16
         a.idx[1] = np.random.randint(0,65535) % 16
     
     while 1:
+        # handle pygame events
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 sys.exit()
-            
+        
+        # draw grid cells    
         for y in range(grid.height):
             for x in range(grid.width):
                 col = np.ceil((grid.heights[y][x]/8.0)*255)
                 pg.draw.rect(screen, (col,col,col), pg.Rect(x*32, y*32, 32, 32), 0)
                 
-        # draw grid - TODO: draw as rects?
+        # draw grid lines
         for i in range(0, 512, 32):
             pg.draw.line(screen, (0,0,0), (0,i), (512,i), 2)
         for i in range(0, 512, 32):

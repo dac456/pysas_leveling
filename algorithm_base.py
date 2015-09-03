@@ -98,6 +98,10 @@ class AlgorithmBase(object):
             a.pu_height = 0
             a.de_height = 0
             
+            # reinitialize agent positions
+            a.idx[0] = np.random.randint(0,65535) % 16
+            a.idx[1] = np.random.randint(0,65535) % 16            
+            
         self.grid.reset()
         
         # reset stats
