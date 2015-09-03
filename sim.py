@@ -7,10 +7,15 @@ import pygame as pg
 
 from map import *
 from algorithm_base import *
+from algorithm_hea_multi import *
 
 if __name__ == '__main__':
     # default sim params
     num_runs = 30
+    
+    # list of algorithm classes
+    # TODO: we want to find these dynamically
+    algorithms = {'hea_multi':AlgorithmHEAMulti}
     
     # process cli args
     next_arg = -1
@@ -26,7 +31,7 @@ if __name__ == '__main__':
     screen = pg.display.set_mode((512,512))
     
     grid = Map(16, 16, 8, {'oracle_termination': True})
-    alg = AlgorithmBase(grid, {'num_agents':8})
+    alg = algorithms['hea_multi'](grid, {'num_agents':8, 'num_chromosomes':5, 'num_steps':20, 'sense_prob':0.01})
     
     # initialize agent positions
     for a in alg.agents:

@@ -35,13 +35,14 @@ class Agent(object):
         
         self.heights = deque(maxlen=self.mem_capacity) # sampled heights
         
-        self.chromosome = [([-1 for i in range(self.chromosome_length)],0.0)] # list of GA chromosome/fitness tuples
+        self.chromosome = []#[([-1 for i in range(self.chromosome_length)],0.0)] # list of GA chromosome/fitness tuples
         self.chromosome_idx = 0 # active chromosome
+        self.action_idx = 0 # active action in chromosome
         
         self.pu_height = -1 # height of last pickup
         self.de_height = -1 # height of last deposit
         self.num_positive = 0 # number of postive changes made for current chromosome
-        self.num_positive_tracking = 0 # number of positive changes made for current run
+        self.num_positive_total = 0 # number of positive changes made for current run
         self.num_pu = 0 # number of successful pickups
         self.num_de = 0 # number of successful deposits
         self.num_pu_attempt = 0 # number of attempted pickups 
@@ -76,5 +77,3 @@ class Agent(object):
         
 if __name__ == '__main__':
     print help(Agent)
-    
-    a = Agent()

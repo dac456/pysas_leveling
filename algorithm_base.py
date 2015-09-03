@@ -4,6 +4,10 @@ import numpy as np
 from map import *
 from agent import *
 
+# http://stackoverflow.com/questions/36932/how-can-i-represent-an-enum-in-python
+def enum(**enums):
+    return type('Enum', (), enums)
+
 class AlgorithmBase(object):
     
     def __init__(self, grid, params):
@@ -18,27 +22,39 @@ class AlgorithmBase(object):
         self.voxels_moved = 0
         self.num_act_calls = 0
         
-    def __is_agent_at_index(x, y):
+    def __is_agent_at_index(self, x, y):
         for a in self.agents:
             if a.idx[0] == x and a.idx[1] == y:
                 return True
                 
         return False
         
+    def pickup_ok(self, agent):
+        raise NotImplementedError, "Err: must overrride pickup_ok() for each algorithm subclass"
+        
+    def deposit_ok(self, agent):
+        raise NotImplementedError, "Err: must overrride deposit_ok() for each algorithm subclass"        
+        
     def sense(self, agent):
         agent.last_height = agent.height
-        agent.height = self.grid[agent.idx[1]][agent.idx[0]]
+        agent.height = self.grid.heights[agent.idx[1]][agent.idx[0]]
         
         r = np.random.ranf()
         if r < self.params['sense_prob']:
-            agent.heights.append(self.grid[agent.idx[1]][agent.idx[0]])
+            agent.heights.append(self.grid.heights[agent.idx[1]][agent.idx[0]])
             
         agent.climbing = agent.height > agent.last_height
         
-    def pickup(self, agent, pickup_ok):
+        # check boundry
+        if agent.idx[0] == 0 or agent.idx[0] == self.grid.width-1:
+             agent.direction_i *= -1;
+        if agent.idx[1] == 0 or agent.idx[1] == self.grid.height-1:
+             agent.direction_j *= -1;        
+        
+    def pickup(self, agent):
         agent.num_pu_attempt += 1
         
-        if pickup_ok(agent):
+        if self.pickup_ok(agent):
             agent.carrying = True
             agent.pu_height = self.grid.heights[agent.idx[1]][agent.idx[0]]
             self.grid.heights[agent.idx[1]][agent.idx[0]] -= 1
@@ -46,19 +62,19 @@ class AlgorithmBase(object):
             self.voxels_moved += 1
             
             agent.num_positive += 1
-            agent.num_positive_tracking += 1
+            agent.num_positive_total += 1
             agent.num_pu += 1
         
-    def deposit(self, agent, deposit_ok):
+    def deposit(self, agent):
         agent.num_de_attempt += 1
         
-        if deposit_ok(agent):
+        if self.deposit_ok(agent):
             agent.carrying = False
             agent.de_height = self.grid.heights[agent.idx[1]][agent.idx[0]]
             self.grid.heights[agent.idx[1]][agent.idx[0]] += 1
             
             agent.num_positive += 1
-            agent.num_positive_tracking += 1
+            agent.num_positive_total += 1
             agent.num_de += 1
         
     def move_forward(self, agent):
@@ -94,7 +110,7 @@ class AlgorithmBase(object):
             a.halt = False
             a.heights.clear()
             a.num_positive = 0
-            a.num_positive_tracking = 0
+            a.num_positive_total = 0
             a.pu_height = 0
             a.de_height = 0
             
@@ -114,6 +130,16 @@ class AlgorithmBase(object):
         self.num_act_calls += 1
         self.act_impl(agent)
         
+        # check boundry
+        if agent.idx[0] < 0:
+             agent.idx[0] = 0
+        if agent.idx[0] > self.grid.width-1:
+             agent.idx[0] = self.grid.width-1
+        if agent.idx[1] < 0:
+             agent.idx[1] = 0
+        if agent.idx[1] > self.grid.height-1:
+             agent.idx[1] = self.grid.height-1;       
+        
     def act_impl(self, agent):
         raise NotImplementedError, "Err: must override act_impl() for each algorithm subclass"
         
@@ -121,4 +147,4 @@ class AlgorithmBase(object):
         raise NotImplementedError, "Err: must override reset_impl() for each algorithm subclass"
             
 if __name__ == '__main__':
-    a = AlgorithmBase(Map(16,16,8), {'num_agents':8})
+    print help(AlgorithmBase)
