@@ -19,7 +19,7 @@ class Agent(object):
         return 20
     
     def __init__(self):
-        self.idx = (0, 0, 0) # map index/position
+        self.idx = [0,0] # map index/position
         
         self.carrying = False # whether the agent is carrying a unit or not
         self.climbing = False # whether the agent is climbing a gradient
