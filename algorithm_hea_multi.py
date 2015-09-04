@@ -98,13 +98,39 @@ class AlgorithmHEAMulti(AlgorithmBase):
                     complete = False
                     
             if complete:
-                # TODO: update chromosomes
+                # generate new pool, lambda
+                lambda_size = len(self.agents) * 5
+                
+                pool = []
+                for i in range(lambda_size):
+                    pool.append(self.__generate_random_chromosome())
+                    
+                # sort current chromosomes by fitness
+                for i in range(len(self.agents)):
+                    for j in range(1, self.params['num_chromosomes']):
+                        k = j
+                        
+                        while k > 0 and self.agents[i].chromosome[k-1][1] > self.agents[i].chromosome[k][1]:
+                            tmp = self.agents[i].chromosome[k]
+                            self.agents[i].chromosome[k] = self.agents[i].chromosome[k-1]
+                            self.agents[i].chromosome[k-1] = tmp
+                            
+                            k -= 1
+                            
+                # replace chromosomes
+                pool_idx = 0
+                for a in self.agents:
+                    for i in range(0, self.params['num_chromosomes']-1):
+                        if a.chromosome[i][1] == 0.0:
+                            a.chromosome[i] = (pool[pool_idx], 0.0)
+                            pool_idx += 1
                 
                 for a in self.agents:
                     a.num_evaluations = 0
         
     def reset_impl(self):
-        agent.action_idx = 0
+        for a in self.agents:
+            a.action_idx = 0
         
 if __name__ == '__main__':
     print help(AlgorithmHEAMulti)

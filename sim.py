@@ -39,7 +39,7 @@ if __name__ == '__main__':
         a.idx[1] = np.random.randint(0,65535) % 16
         
         
-    for i in range(num_runs):
+    for r in range(num_runs):
         run = True
         
         while run:

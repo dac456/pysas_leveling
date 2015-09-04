@@ -44,17 +44,19 @@ class Map(object):
     def __grid_max(self, grid):
         rows = []
         for y in range(self.height):
-            rows.append(max(self.heights[y]))
-            
+            rows.append(max(grid[y]))
+ 
         return max(rows)
                 
     def is_optimal(self):
         out = True
         
         if self.params['oracle_termination'] == True:
-            for h in self.heights:
-                if h > self.__grid_max(self.optimal_heights):
-                    out = False
+            for hy in self.heights:
+                for hx in hy:
+                    if hx > self.__grid_max(self.optimal_heights):
+                        out = False
+                        break
                     
         return out
             
