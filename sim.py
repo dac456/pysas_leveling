@@ -34,14 +34,14 @@ if __name__ == '__main__':
     
     screen = pg.display.set_mode((512,512))
     
-    fig, ax = plt.subplots()  
-    
-    N = 2
+    N = 2 # number of terrains to test
     ind = np.arange(N)
-    width = 0.3
+    width = 0.35
     
-    u = []
-    sig = []
+    u_vox = []
+    sig_vox = []
+    u_pos = []
+    sig_pos = []
     labels = []
         
     for t in range(1,N+1):
@@ -95,16 +95,34 @@ if __name__ == '__main__':
             alg.reset()
         
         # plot runs for terrain t
+        u_vox.append(logger.get_average_over_runs('voxels_moved'))
+        sig_vox.append(logger.get_stddev_over_runs('voxels_moved'))
         
-        u.append(logger.get_average_over_runs('voxels_moved'))
-        sig.append(logger.get_stddev_over_runs('voxels_moved'))
+        u_pos.append(logger.get_average_over_runs('avg_positive_changes'))
+        sig_pos.append(logger.get_stddev_over_runs('avg_positive_changes'))
+        
         labels.append('T'+str(t)+' ('+str(grid.total_units())+')')
             
-    # display charts  
-    ax.bar(ind, tuple(u), width, color='r', yerr=tuple(sig))
+    ## display charts  
+    
+    # voxels_moved
+    plt.figure(0)
+    
+    fig, ax = plt.subplots()  
+    ax.bar(ind, tuple(u_vox), width, color='r', yerr=tuple(sig_vox))
     ax.set_title('Average voxels moved between '+str(len(alg.agents))+' agents over '+str(num_runs)+' runs')
     ax.set_ylabel('Voxels Moved') 
     ax.set_xticks(ind+width)
     ax.set_xticklabels(tuple(labels))
+    
+    # avg_positive_changes
+    plt.figure(1)
+    
+    fig, ax = plt.subplots()  
+    ax.bar(ind, tuple(u_pos), width, color='r', yerr=tuple(sig_pos))
+    ax.set_title('Average positive changes per chromosome between '+str(len(alg.agents))+' agents over '+str(num_runs)+' runs')
+    ax.set_ylabel('Avg Positive Changes') 
+    ax.set_xticks(ind+width)
+    ax.set_xticklabels(tuple(labels))    
     
     plt.show()

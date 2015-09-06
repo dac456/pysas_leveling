@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from algorithm_base import *
+from stats_logger import *
 
 class AlgorithmHEAMulti(AlgorithmBase):
     
@@ -17,6 +18,7 @@ class AlgorithmHEAMulti(AlgorithmBase):
                 a.chromosome.append((self.__generate_random_chromosome(), 0.0))
                 
             a.num_evaluations = 0
+            a.avg_positive_changes = 0
         
     def __is_chromosome_valid(self, c):
         if c.count(AlgorithmHEAMulti.Actions.PICKUP) == c.count(AlgorithmHEAMulti.Actions.DEPOSIT):
@@ -78,6 +80,8 @@ class AlgorithmHEAMulti(AlgorithmBase):
             agent.num_evaluations += 1
             agent.chromosome_idx += 1
             
+            agent.avg_positive_changes += agent.num_positive
+            
             agent.num_positive = 0
             agent.num_pu = 0
             agent.num_de = 0
@@ -127,13 +131,22 @@ class AlgorithmHEAMulti(AlgorithmBase):
                         if a.chromosome[i][1] == 0.0:
                             a.chromosome[i] = (pool[pool_idx], 0.0)
                             pool_idx += 1
-                
+                          
                 for a in self.agents:
+                    a.avg_positive_changes /= float(a.num_evaluations)
                     a.num_evaluations = 0
         
     def reset_impl(self):
         for a in self.agents:
             a.action_idx = 0
+            
+    def store_run(self, logger, run_idx):
+        s = 0.0
+        for a in self.agents:
+            s += a.avg_positive_changes
+            
+        logger.stats[run_idx]['avg_positive_changes'] = s/float(len(self.agents))
+        
         
 if __name__ == '__main__':
     print help(AlgorithmHEAMulti)

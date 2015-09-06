@@ -145,6 +145,9 @@ class AlgorithmBase(object):
         
     def reset_impl(self):
         raise NotImplementedError, "Err: must override reset_impl() for each algorithm subclass"
+        
+    def store_run(self, logger, run_idx):
+        pass
             
 if __name__ == '__main__':
     print help(AlgorithmBase)

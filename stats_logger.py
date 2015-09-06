@@ -18,7 +18,7 @@ class StatsLogger:
         self.stats[run_idx]['act_calls'] = self.alg.num_act_calls
         self.stats[run_idx]['avg_act_calls'] = float(self.alg.num_act_calls)/float(len(self.alg.agents))
         
-        # TODO: call algorithm-specific store method
+        self.alg.store_run(self, run_idx)
         
     def get_average_over_runs(self, stat):
        s = 0.0
