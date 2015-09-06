@@ -118,7 +118,7 @@ class AlgorithmBase(object):
             a.idx[0] = np.random.randint(0,65535) % 16
             a.idx[1] = np.random.randint(0,65535) % 16            
             
-        self.grid.reset()
+        self.grid.reset(self.grid.seed)
         
         # reset stats
         self.voxels_moved = 0

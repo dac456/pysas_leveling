@@ -1,20 +1,22 @@
 #!/usr/bin/env python
 
 import numpy as np
-from noise import pnoise2
+from noise import pnoise3
 
 class Map(object):
     """
     generates and holds a 2D grid of height values, using perlin noise
     """
     
-    def __init__(self, width, height, max_depth, params):
+    def __init__(self, width, height, max_depth, params, seed=1):
         self.width = width
         self.height = height
         self.max_depth = max_depth
         self.params = params
         
-        self.reset()
+        self.z = np.random.randint(0,65535)
+        self.seed = seed
+        self.reset(seed)
         
     def __frange(self, start, stop, step):
         i = start
@@ -47,6 +49,9 @@ class Map(object):
             rows.append(max(grid[y]))
  
         return max(rows)
+        
+    def total_units(self):
+        return self.__total_volume(self.heights)
                 
     def is_optimal(self):
         out = True
@@ -60,8 +65,8 @@ class Map(object):
                     
         return out
             
-    def reset(self):
-        self.heights = [[int(np.ceil(pnoise2(x, y, base=1)*self.max_depth)) for x in self.__frange(0.0, 1.0, 1.0/self.width)] for y in self.__frange(0.0, 1.0, 1.0/self.height)]
+    def reset(self, seed):
+        self.heights = [[int(np.abs(np.ceil(pnoise3(x, y, self.z, base=seed)*self.max_depth))) for x in self.__frange(0.0, 1.0, 1.0/self.width)] for y in self.__frange(0.0, 1.0, 1.0/self.height)]
         self.optimal_heights = [[0 for x in range(self.width)] for y in range(self.height)]
         self.__make_optimal()
         

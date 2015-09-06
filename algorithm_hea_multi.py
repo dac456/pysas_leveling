@@ -56,7 +56,7 @@ class AlgorithmHEAMulti(AlgorithmBase):
         self.sense(agent)
     
     def __write(self, agent):
-        step = agent.chromosome[agent.chromosome_idx][0][agent.action_idx]
+        step = agent.chromosome[agent.num_evaluations][0][agent.action_idx]
         
         if step == AlgorithmHEAMulti.Actions.MOVE:
             self.move_forward(agent)
@@ -73,9 +73,10 @@ class AlgorithmHEAMulti(AlgorithmBase):
             
         agent.action_idx = (agent.action_idx + 1) % self.params['num_steps']
         if agent.action_idx == 0:
-            agent.chromosome[agent.chromosome_idx] = (agent.chromosome[agent.chromosome_idx][0], agent.fitness())
+            agent.chromosome[agent.num_evaluations] = (agent.chromosome[agent.num_evaluations][0], agent.fitness())
             
             agent.num_evaluations += 1
+            agent.chromosome_idx += 1
             
             agent.num_positive = 0
             agent.num_pu = 0
@@ -85,19 +86,21 @@ class AlgorithmHEAMulti(AlgorithmBase):
         
     def act_impl(self, agent):
         if agent.halt == False:
-            if agent.read:
-                self.__read(agent)
-                agent.read = False
-            else:
-                self.__write(agent)
-                agent.read = True
-                
+            
             complete = True    
             for a in self.agents:
                 if a.num_evaluations < 5:
-                    complete = False
+                    complete = False            
+            
+            if not complete:
+                if agent.read:
+                    self.__read(agent)
+                    agent.read = False
+                else:
+                    self.__write(agent)
+                    agent.read = True
                     
-            if complete:
+            else:
                 # generate new pool, lambda
                 lambda_size = len(self.agents) * 5
                 
