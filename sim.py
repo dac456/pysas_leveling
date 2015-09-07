@@ -52,18 +52,15 @@ if __name__ == '__main__':
                    (algorithms['hea_multi'](None, {'num_agents':8, 'num_chromosomes':5, 'num_steps':20, 'sense_prob':0.01, 'follow_gradient':False}),(1.0,0.0,1.0)), \
                    (algorithms['standard'](None, {'num_agents':8, 'act_prob':0.3, 'sense_prob':0.01, 'follow_gradient':False}),(1.0,1.0,0.0))]
                    
-    terrains = [Map(16, 16, 32, {'oracle_termination': True}, t) for t in range(N)
+    terrains = [Map(16, 16, 32, {'oracle_termination': True}, t) for t in range(N)]
     
     u_vox = [[] for i in range(len(experiments))]
     sig_vox = [[] for i in range(len(experiments))]
     u_pos = [[] for i in range(len(experiments))]
     sig_pos = [[] for i in range(len(experiments))]
     u_act = [[] for i in range(len(experiments))]
-    sig_act = [[] for i in range(len(experiments))
+    sig_act = [[] for i in range(len(experiments))]
     labels = []
-    
-    for i in range(N):
-        labels.append('T'+str(t)+' ('+str(grid.total_units())+')')    
     
     for e in range(len(experiments)):    
         alg = experiments[e][0]
@@ -132,6 +129,8 @@ if __name__ == '__main__':
                 
             u_act[e].append(logger.get_average_over_runs('avg_act_calls'))
             sig_act[e].append(logger.get_stddev_over_runs('avg_act_calls'))
+            
+            labels.append('T'+str(t)+' ('+str(grid.total_units())+')')  
             
     ## display charts  
     
