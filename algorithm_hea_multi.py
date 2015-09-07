@@ -67,9 +67,17 @@ class AlgorithmHEAMulti(AlgorithmBase):
         elif step == AlgorithmHEAMulti.Actions.DEPOSIT:
             self.deposit(agent)
         elif step == AlgorithmHEAMulti.Actions.ROTATE_LEFT:
-            self.rotate_left(agent)
+            if self.params['follow_gradient']:
+                if not agent.climbing:
+                    self.rotate_left(agent)
+            else:
+                self.rotate_left(agent)
         elif step == AlgorithmHEAMulti.Actions.ROTATE_RIGHT:
-            self.rotate_right(agent)
+            if self.params['follow_gradient']:
+                if not agent.climbing:
+                    self.rotate_right(agent)
+            else:
+                self.rotate_right(agent)
         else:
             print "invalid action"
             
@@ -124,7 +132,7 @@ class AlgorithmHEAMulti(AlgorithmBase):
                             
                             k -= 1
                             
-                # replace chromosomes
+                # replace chromosomes TODO: check self.params['replacement_policy']
                 pool_idx = 0
                 for a in self.agents:
                     for i in range(0, self.params['num_chromosomes']-1):
