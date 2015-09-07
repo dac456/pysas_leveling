@@ -38,78 +38,84 @@ if __name__ == '__main__':
     ind = np.arange(N)
     width = 0.35
     
-    u_vox = []
-    sig_vox = []
-    u_pos = []
-    sig_pos = []
+    experiments = [(algorithms['hea_multi'](None, {'num_agents':8, 'num_chromosomes':5, 'num_steps':10, 'sense_prob':0.01}), (1.0,0.0,0.0)),(algorithms['hea_multi'](None, {'num_agents':8, 'num_chromosomes':5, 'num_steps':20, 'sense_prob':0.01}),(0.0,0.0,1.0))]
+    
+    u_vox = [[] for i in range(len(experiments))]
+    sig_vox = [[] for i in range(len(experiments))]
+    u_pos = [[] for i in range(len(experiments))]
+    sig_pos = [[] for i in range(len(experiments))]
     labels = []
+    
+    for e in range(len(experiments)):    
+        alg = experiments[e][0]
         
-    for t in range(1,N+1):
-        grid = Map(16, 16, 32, {'oracle_termination': True}, t)
-        alg = algorithms['hea_multi'](grid, {'num_agents':8, 'num_chromosomes':5, 'num_steps':20, 'sense_prob':0.01})
-        logger = StatsLogger(alg, num_runs)
-        
-        # initialize agent positions
-        for a in alg.agents:
-            a.idx[0] = np.random.randint(0,65535) % 16
-            a.idx[1] = np.random.randint(0,65535) % 16        
-        
-        for r in range(num_runs):
-            run = True
+        for t in range(1,N+1):
+            grid = Map(16, 16, 32, {'oracle_termination': True}, t)
+            alg.grid = grid
+            logger = StatsLogger(alg, num_runs)
             
-            while run:
-                # handle pygame events
-                for event in pg.event.get():
-                    if event.type == pg.QUIT:
-                        sys.exit()
+            # initialize agent positions
+            for a in alg.agents:
+                a.idx[0] = np.random.randint(0,65535) % 16
+                a.idx[1] = np.random.randint(0,65535) % 16        
+            
+            for r in range(num_runs):
+                run = True
                 
-                # draw grid cells    
-                for y in range(grid.height):
-                    for x in range(grid.width):
-                        col = np.ceil((grid.heights[y][x]/32.0)*255)
-                        pg.draw.rect(screen, (col,col,col), pg.Rect(x*32, y*32, 32, 32), 0)
-                        
-                # draw grid lines
-                for i in range(0, 512, 32):
-                    pg.draw.line(screen, (0,0,0), (0,i), (512,i), 2)
-                for i in range(0, 512, 32):
-                    pg.draw.line(screen, (0,0,0), (i,0), (i,512), 2)     
+                while run:
+                    # handle pygame events
+                    for event in pg.event.get():
+                        if event.type == pg.QUIT:
+                            sys.exit()
                     
-                # draw agents
-                for a in alg.agents:
-                    col = (255,0,0,0)
-                    if a.carrying:
-                        col = (0,255,0)
-                        
-                    pg.draw.circle(screen, col, ((a.idx[0]*32)+16, (a.idx[1]*32)+16), 8, 0)           
+                    # draw grid cells    
+                    for y in range(grid.height):
+                        for x in range(grid.width):
+                            col = np.ceil((grid.heights[y][x]/32.0)*255)
+                            pg.draw.rect(screen, (col,col,col), pg.Rect(x*32, y*32, 32, 32), 0)
                             
-                pg.display.flip()
-                
-                if not grid.is_optimal():
+                    # draw grid lines
+                    for i in range(0, 512, 32):
+                        pg.draw.line(screen, (0,0,0), (0,i), (512,i), 2)
+                    for i in range(0, 512, 32):
+                        pg.draw.line(screen, (0,0,0), (i,0), (i,512), 2)     
+                        
+                    # draw agents
                     for a in alg.agents:
-                        alg.act(a)
-                else:
-                    run = False
+                        col = (255,0,0,0)
+                        if a.carrying:
+                            col = (0,255,0)
+                            
+                        pg.draw.circle(screen, col, ((a.idx[0]*32)+16, (a.idx[1]*32)+16), 8, 0)           
+                                
+                    pg.display.flip()
+                    
+                    if not grid.is_optimal():
+                        for a in alg.agents:
+                            alg.act(a)
+                    else:
+                        run = False
+                
+                logger.store_run(r)
+                alg.reset()
             
-            logger.store_run(r)
-            alg.reset()
-        
-        # plot runs for terrain t
-        u_vox.append(logger.get_average_over_runs('voxels_moved'))
-        sig_vox.append(logger.get_stddev_over_runs('voxels_moved'))
-        
-        u_pos.append(logger.get_average_over_runs('avg_positive_changes'))
-        sig_pos.append(logger.get_stddev_over_runs('avg_positive_changes'))
-        
-        labels.append('T'+str(t)+' ('+str(grid.total_units())+')')
+            # plot runs for terrain t
+            u_vox[e].append(logger.get_average_over_runs('voxels_moved'))
+            sig_vox[e].append(logger.get_stddev_over_runs('voxels_moved'))
+            
+            u_pos[e].append(logger.get_average_over_runs('avg_positive_changes'))
+            sig_pos[e].append(logger.get_stddev_over_runs('avg_positive_changes'))
+            
+            labels.append('T'+str(t)+' ('+str(grid.total_units())+')')
             
     ## display charts  
     
     # voxels_moved
     plt.figure(0)
     
-    fig, ax = plt.subplots()  
-    ax.bar(ind, tuple(u_vox), width, color='r', yerr=tuple(sig_vox))
+    fig, ax = plt.subplots()
+    for i in range(len(experiments)):  
+        ax.bar(ind+(width*i), tuple(u_vox[i]), width, color=experiments[i][1], yerr=tuple(sig_vox[i]))
     ax.set_title('Average voxels moved between '+str(len(alg.agents))+' agents over '+str(num_runs)+' runs')
     ax.set_ylabel('Voxels Moved') 
     ax.set_xticks(ind+width)
@@ -119,7 +125,8 @@ if __name__ == '__main__':
     plt.figure(1)
     
     fig, ax = plt.subplots()  
-    ax.bar(ind, tuple(u_pos), width, color='r', yerr=tuple(sig_pos))
+    for i in range(len(experiments)):  
+        ax.bar(ind+(width*i), tuple(u_pos[i]), width, color=experiments[i][1], yerr=tuple(sig_pos[i]))
     ax.set_title('Average positive changes per chromosome between '+str(len(alg.agents))+' agents over '+str(num_runs)+' runs')
     ax.set_ylabel('Avg Positive Changes') 
     ax.set_xticks(ind+width)
