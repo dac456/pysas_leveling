@@ -132,13 +132,18 @@ class AlgorithmHEAMulti(AlgorithmBase):
                             
                             k -= 1
                             
-                # replace chromosomes TODO: check self.params['replacement_policy']
+                # replace chromosomes
                 pool_idx = 0
                 for a in self.agents:
                     for i in range(0, self.params['num_chromosomes']-1):
-                        if a.chromosome[i][1] == 0.0:
-                            a.chromosome[i] = (pool[pool_idx], 0.0)
-                            pool_idx += 1
+                        if self.params['replacement_policy'] == 0:
+                            if a.chromosome[i][1] == 0.0:
+                                a.chromosome[i] = (pool[pool_idx], 0.0)
+                                pool_idx += 1
+                        elif self.params['replacement_policy'] == 1:
+                             if a.chromosome[i][1] < 1.0:
+                                a.chromosome[i] = (pool[pool_idx], 0.0)
+                                pool_idx += 1                           
                           
                 for a in self.agents:
                     a.avg_positive_changes /= float(a.num_evaluations)
