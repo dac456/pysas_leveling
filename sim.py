@@ -46,13 +46,16 @@ if __name__ == '__main__':
     N = num_terrains
     ind = np.arange(N)
     
-    experiments = [(algorithms['standard'](None, {'num_agents':8, 'act_prob':0.3, 'sense_prob':0.01, 'follow_gradient':True}),(1.0,0.5,1.0)), \
-                   (algorithms['standard'](None, {'num_agents':8, 'act_prob':0.6, 'sense_prob':0.01, 'follow_gradient':True}),(1.0,0.0,1.0)), \
-                   (algorithms['standard'](None, {'num_agents':8, 'act_prob':0.9, 'sense_prob':0.01, 'follow_gradient':True}),(0.0,0.0,1.0)), \
+    experiments = [(algorithms['standard'](None, {'num_agents':8, 'act_prob':0.3, 'sense_prob':0.01, 'follow_gradient':True, 'agent_rotate':True}),(1.0,0.0,0.0)), \
+                   (algorithms['standard'](None, {'num_agents':8, 'act_prob':0.6, 'sense_prob':0.01, 'follow_gradient':True, 'agent_rotate':True}),(0.0,1.0,0.0)), \
+                   (algorithms['standard'](None, {'num_agents':8, 'act_prob':0.9, 'sense_prob':0.01, 'follow_gradient':True, 'agent_rotate':True}),(0.0,0.0,1.0)), \
+                   (algorithms['standard'](None, {'num_agents':8, 'act_prob':0.3, 'sense_prob':0.01, 'follow_gradient':True, 'agent_rotate':False}),(1.0,1.0,0.0)), \
+                   (algorithms['standard'](None, {'num_agents':8, 'act_prob':0.6, 'sense_prob':0.01, 'follow_gradient':True, 'agent_rotate':False}),(0.0,1.0,1.0)), \
+                   (algorithms['standard'](None, {'num_agents':8, 'act_prob':0.9, 'sense_prob':0.01, 'follow_gradient':True, 'agent_rotate':False}),(1.0,0.0,1.0)) ]
                    #(algorithms['standard'](None, {'num_agents':8, 'act_prob':0.3, 'sense_prob':0.01, 'follow_gradient':False}),(0.0,1.0,1.0)), \
-                   (algorithms['hea_multi'](None, {'num_agents':8, 'num_chromosomes':5, 'num_steps':20, 'sense_prob':0.01, 'follow_gradient':True, 'replacement_policy':0}),(0.0,1.0,0.0)), \
+                   #(algorithms['hea_multi'](None, {'num_agents':8, 'num_chromosomes':5, 'num_steps':20, 'sense_prob':0.01, 'follow_gradient':True, 'replacement_policy':0}),(0.0,1.0,0.0)), \
                    #(algorithms['hea_multi'](None, {'num_agents':8, 'num_chromosomes':5, 'num_steps':20, 'sense_prob':0.01, 'follow_gradient':False, 'replacement_policy':0}),(1.0,1.0,0.0)), \
-                   (algorithms['hea_multi'](None, {'num_agents':8, 'num_chromosomes':5, 'num_steps':20, 'sense_prob':0.01, 'follow_gradient':True, 'replacement_policy':1}),(1.0,0.5,0.0)) ]
+                   #(algorithms['hea_multi'](None, {'num_agents':8, 'num_chromosomes':5, 'num_steps':20, 'sense_prob':0.01, 'follow_gradient':True, 'replacement_policy':1}),(1.0,0.5,0.0)) ]
                    #(algorithms['hea_multi'](None, {'num_agents':8, 'num_chromosomes':5, 'num_steps':20, 'sense_prob':0.01, 'follow_gradient':False, 'replacement_policy':1}),(0.0,0.5,1.0))]
                    
     terrains = [Map(16, 16, 32, {'oracle_termination': True}, t) for t in range(N)]
