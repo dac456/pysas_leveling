@@ -25,22 +25,29 @@ class AlgorithmStandard(AlgorithmBase):
         elif self.deposit_ok(agent):
             self.deposit(agent)
             
-        r = np.random.ranf()
-        if r < 0.75:
-            if np.abs(np.random.randint(0,65535)) % 2 == 0:
-                if self.params['follow_gradient']:
-                    if not agent.climbing:
+        if self.params['agent_rotate']:    
+            r = np.random.ranf()
+            if r < 0.75:
+                if np.abs(np.random.randint(0,65535)) % 2 == 0:
+                    if self.params['follow_gradient']:
+                        if not agent.climbing:
+                            self.rotate_left(agent)
+                    else:
                         self.rotate_left(agent)
-                else:
-                    self.rotate_left(agent)
-            elif np.abs(np.random.randint(0,65535)) % 2 == 1:
-                if self.params['follow_gradient']:
-                    if not agent.climbing:
+                elif np.abs(np.random.randint(0,65535)) % 2 == 1:
+                    if self.params['follow_gradient']:
+                        if not agent.climbing:
+                            self.rotate_right(agent)
+                    else:
                         self.rotate_right(agent)
-                else:
-                    self.rotate_right(agent)
-                
-        self.move_forward(agent)
+                    
+            self.move_forward(agent)
+        else:
+            r = np.random.ranf()
+            if r < 0.75:
+                self.move_random(agent)
+            else:
+                self.move_forward(agent)
         
     def act_impl(self, agent):
         if agent.halt == False:        

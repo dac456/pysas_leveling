@@ -84,8 +84,8 @@ class AlgorithmBase(object):
        
     def move_random(self, agent):
         movement = [-1, 0, 1]
-        agent.direction_i = movement[np.abs(np.randint(0,65535) % 3)]
-        agent.direction_j = movement[np.abs(np.randint(0,65535) % 3)]
+        agent.direction_i = movement[np.abs(np.random.randint(0,65535) % 3)]
+        agent.direction_j = movement[np.abs(np.random.randint(0,65535) % 3)]
         
         self.move_forward(agent)
         
